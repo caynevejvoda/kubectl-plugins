@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# kubectl-use: Interactive Kubernetes context and namespace switcher
+# This script provides a user-friendly way to switch between kubectl contexts
+# and namespaces using gum for interactive selection.
+
+set -euo pipefail
+
+# Terminal color codes for formatted output
+BOLD='\e[1m'
+RED='\e[31m'
+BLUE='\e[34m'
+RESET='\e[0m'
+
+# gum configuration with Catppuccin Mocha color scheme
+# Sets up the fuzzy finder with custom theming for better UX
+FILTER="gum filter \
+	--prompt.foreground=#89b4fa \
+	--cursor-text.foreground=#89b4fa \
+	--indicator.foreground=#89b4fa \
+	--match.foreground=#89b4fa"
+
+# error: Display an error message and exit with status 1
+# Args:
+#   $1 - Error message to display
+error() {
+	echo -e "${BOLD}${RED}ERROR${RESET} $1" >&2
+	exit 1
+}
+
+# info: Display an informational message
+# Args:
+#   $1 - Info message to display
+info() {
+	echo -e "${BOLD}${BLUE}INFO${RESET} $1"
+}
+
+# checkDependencies: Verify required commands are installed
+# Checks for: gum and kubectl
+# Exits with error if any dependency is missing
+checkDependencies() {
+	if ! command -v gum &>/dev/null; then
+		error "gum is not installed"
+	fi
+
+	if ! command -v kubectl &>/dev/null; then
+		error "kubectl is not installed"
+	fi
+}
+
+# context: Interactively select and switch kubectl context
+# Returns: The name of the selected context
+# Exits with error if context retrieval or switching fails
+context() {
+	local contexts context
+
+	# Get all available kubectl contexts
+	if ! contexts="$(kubectl config get-contexts -o name)"; then
+		error "Failed to get kubectl contexts: $contexts"
+	fi
+
+	# Let user select a context using gum
+	if ! context="$(echo "$contexts" | $FILTER --prompt='context> ')"; then
+		error "Failed to select context"
+	fi
+
+	# Switch to the selected context
+	if ! kubectl config use-context "$context" &>/dev/null; then
+		error "Failed to switch to context '$context'"
+	fi
+
+	echo "$context"
+}
+
+# namespace: Interactively select and set namespace for current context
+# Returns: The name of the selected namespace
+# Exits with error if namespace retrieval or setting fails
+namespace() {
+	local namespaces namespace
+
+	# Get all available namespaces in the current context
+	if ! namespaces="$(kubectl get ns -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')"; then
+		error "Failed to get namespaces"
+	fi
+
+	# Let user select a namespace using gum
+	if ! namespace="$(echo "$namespaces" | $FILTER --prompt='namespace> ')"; then
+		error "Failed to select namespace"
+	fi
+
+	# Set the namespace for the current context
+	if ! kubectl config set-context --current --namespace="$namespace" &>/dev/null; then
+		error "Failed to set namespace '$namespace' for current context"
+	fi
+
+	echo "$namespace"
+}
+
+# main: Orchestrate the context and namespace selection workflow
+# 1. Checks dependencies
+# 2. Prompts user to select a context and set it
+# 3. Prompts user to select a namespace and set it
+# 4. Displays confirmation message
+main() {
+	checkDependencies
+	info "Switched to context \"$(context)\" and namespace \"$(namespace)\""
+}
+
+main
