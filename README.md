@@ -64,3 +64,24 @@ chmod +x ~/.local/bin/kubectl-use
 ```bash
 kubectl use
 ```
+
+## createsecret
+
+Interactively create a generic secret.
+
+**Requirements**
+
+`bash` `kubectl` `gum`
+
+**Installation**
+
+```bash
+curl -o ~/.local/bin/kubectl-createsecret https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-createsecret
+chmod +x ~/.local/bin/kubectl-createsecret
+```
+
+**Usage**
+
+```bash
+kubectl createsecret
+```
