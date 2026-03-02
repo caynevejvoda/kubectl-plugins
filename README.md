@@ -132,3 +132,24 @@ echo 'PREFIX=cnpg-role-' > ~/.config/kubectl-create_cnpg_role_secret/config
 ```
 
 With this config, if you enter `alice` as the secret name, the resulting secret will be named `cnpg-role-alice`.
+
+## cilium-health-status
+
+Interactively select a node, then run `cilium-health status --verbose` on that node's Cilium agent pod.
+
+**Requirements**
+
+`bash` `kubectl` `gum`
+
+**Installation**
+
+```bash
+curl -o ~/.local/bin/kubectl-cilium_health_status https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-cilium_health_status
+chmod +x ~/.local/bin/kubectl-cilium_health_status
+```
+
+**Usage**
+
+```bash
+kubectl cilium-health-status
+```

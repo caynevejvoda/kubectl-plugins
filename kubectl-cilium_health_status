@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# kubectl-cilium_health_status: Run verbose Cilium health status on a node
+# This script lets you pick a Kubernetes node and runs
+# `cilium-health status --verbose` on that node's Cilium agent pod.
+
+set -euo pipefail
+
+# Terminal color codes for formatted output
+BOLD='\e[1m'
+RED='\e[31m'
+BLUE='\e[34m'
+RESET='\e[0m'
+
+# gum configuration with Catppuccin Mocha color scheme
+# Sets up the fuzzy finder with custom theming for better UX
+FILTER="gum filter \
+	--prompt.foreground=#89b4fa \
+	--cursor-text.foreground=#89b4fa \
+	--indicator.foreground=#89b4fa \
+	--match.foreground=#89b4fa"
+
+# Cilium agent pods are typically deployed in kube-system
+CILIUM_NAMESPACE="kube-system"
+
+# error: Display an error message and exit with status 1
+# Args:
+#   $1 - Error message to display
+error() {
+	echo -e "${BOLD}${RED}ERROR${RESET} $1" >&2
+	exit 1
+}
+
+# info: Display an informational message
+# Args:
+#   $1 - Info message to display
+info() {
+	echo -e "${BOLD}${BLUE}INFO${RESET} $1"
+}
+
+# checkDependencies: Verify required commands are installed
+# Checks for: gum and kubectl
+# Exits with error if any dependency is missing
+checkDependencies() {
+	if ! command -v gum &>/dev/null; then
+		error "gum is not installed"
+	fi
+
+	if ! command -v kubectl &>/dev/null; then
+		error "kubectl is not installed"
+	fi
+}
+
+# selectNode: Interactively select a node using gum
+# Returns: The name of the selected node
+# Exits with error if node retrieval or selection fails
+selectNode() {
+	local nodes node
+
+	if ! nodes="$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')"; then
+		error "Failed to get nodes"
+	fi
+
+	if [[ -z "$nodes" ]]; then
+		error "No nodes found"
+	fi
+
+	if ! node="$(echo "$nodes" | $FILTER --prompt='node> ')"; then
+		error "Node selection cancelled"
+	fi
+
+	echo "$node"
+}
+
+# getCiliumAgentPod: Get Cilium agent pod for a node
+# Args:
+#   $1 - Node name
+# Returns: Cilium agent pod name
+# Exits with error if pod retrieval fails or no pod exists on node
+getCiliumAgentPod() {
+	local node="$1"
+	local pod
+
+	if ! pod="$(kubectl get pods -n "$CILIUM_NAMESPACE" -l k8s-app=cilium --field-selector "spec.nodeName=${node}" -o jsonpath='{.items[0].metadata.name}')"; then
+		error "Failed to get Cilium agent pod for node '$node'"
+	fi
+
+	if [[ -z "$pod" ]]; then
+		error "No Cilium agent pod found on node '$node' in namespace '$CILIUM_NAMESPACE'"
+	fi
+
+	echo "$pod"
+}
+
+# runHealthStatus: Execute verbose Cilium health status command in agent pod
+# Args:
+#   $1 - Node name
+#   $2 - Cilium agent pod name
+runHealthStatus() {
+	local node="$1"
+	local pod="$2"
+
+	info "Running \"cilium-health status --verbose\" on pod '$pod' (node '$node')"
+
+	if ! kubectl exec -n "$CILIUM_NAMESPACE" "$pod" -c cilium-agent -- cilium-health status --verbose; then
+		error "Failed to run cilium-health status on pod '$pod'"
+	fi
+}
+
+# main: Orchestrate the Cilium health status workflow
+# 1. Checks dependencies
+# 2. Prompts user to select a node
+# 3. Finds Cilium agent pod on the selected node
+# 4. Runs cilium-health status --verbose in the pod
+main() {
+	checkDependencies
+
+	local node pod
+	node="$(selectNode)"
+	pod="$(getCiliumAgentPod "$node")"
+
+	runHealthStatus "$node" "$pod"
+}
+
+main
