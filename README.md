@@ -2,6 +2,27 @@
 
 A collection of kubectl plugins.
 
+## Installation with Devbox
+
+> **Note:** Devbox does not support `git+https://...` URLs, so installations
+> must use the read-only GitHub mirror.
+
+Install all plugins from the repository's Nix flake:
+
+```bash
+devbox global add github:caynevejvoda/kubectl-plugins
+```
+
+To install only one plugin, select its flake package explicitly:
+
+```bash
+devbox global add github:caynevejvoda/kubectl-plugins#kubectl-ctx
+```
+
+The flake packages include their runtime dependencies. Available package names
+match the executable names documented below; the default package installs all of
+them.
+
 ## ctx
 
 Interactively select a context to use.
