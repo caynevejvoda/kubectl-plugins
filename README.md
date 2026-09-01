@@ -158,3 +158,29 @@ chmod +x ~/.local/bin/kubectl-cilium_health_status
 ```bash
 kubectl cilium-health-status
 ```
+
+## debug-pod
+
+Interactively select a context, namespace, pod, and target container, then
+attach a restricted [netshoot](https://github.com/nicolaka/netshoot) debug
+container.
+
+The selected context is used for this command only. The current kubeconfig
+context and namespace are not changed.
+
+**Requirements**
+
+`bash` `kubectl` `gum`
+
+**Installation**
+
+```bash
+curl -o ~/.local/bin/kubectl-debug_pod https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-debug_pod
+chmod +x ~/.local/bin/kubectl-debug_pod
+```
+
+**Usage**
+
+```bash
+kubectl debug-pod
+```

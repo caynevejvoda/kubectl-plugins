@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+BOLD='\e[1m'
+RED='\e[31m'
+RESET='\e[0m'
+
+FILTER=(
+	gum filter
+	--prompt.foreground='#89b4fa'
+	--cursor-text.foreground='#89b4fa'
+	--indicator.foreground='#89b4fa'
+	--match.foreground='#89b4fa'
+)
+
+error() {
+	echo -e "${BOLD}${RED}ERROR${RESET} $1" >&2
+	exit 1
+}
+
+check_dependencies() {
+	command -v kubectl &>/dev/null || error "kubectl is not installed"
+	command -v gum &>/dev/null || error "gum is not installed"
+}
+
+select_value() {
+	local prompt="$1"
+	local values="$2"
+	local value
+
+	[[ -n "$values" ]] || error "No ${prompt%>}s found"
+	if ! value="$(printf '%s\n' "$values" | "${FILTER[@]}" --prompt="$prompt ")"; then
+		error "Selection cancelled"
+	fi
+	[[ -n "$value" ]] || error "Selection cancelled"
+
+	printf '%s\n' "$value"
+}
+
+main() {
+	local contexts context namespaces namespace pods pod targets target
+
+	check_dependencies
+
+	contexts="$(kubectl config get-contexts -o name)" || error "Failed to get kubectl contexts"
+	context="$(select_value 'context>' "$contexts")"
+
+	namespaces="$(kubectl --context "$context" get namespaces -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')" || error "Failed to get namespaces from context '$context'"
+	namespace="$(select_value 'namespace>' "$namespaces")"
+
+	pods="$(kubectl --context "$context" --namespace "$namespace" get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')" || error "Failed to get pods in namespace '$namespace'"
+	pod="$(select_value 'pod>' "$pods")"
+
+	targets="$(kubectl --context "$context" --namespace "$namespace" get pod "$pod" -o jsonpath='{range .spec.containers[*]}{.name}{"\n"}{end}')" || error "Failed to get containers from pod '$pod'"
+	target="$(select_value 'target>' "$targets")"
+
+	exec kubectl --context "$context" debug -it --namespace "$namespace" "$pod" \
+		--image=nicolaka/netshoot:latest \
+		--profile=restricted \
+		--target="$target" \
+		-- bash
+}
+
+main "$@"
