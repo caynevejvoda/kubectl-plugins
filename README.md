@@ -88,9 +88,11 @@ kubectl createsecret
 
 ## create-cnpg-role-secret
 
-Interactively create a CNPG (CloudNativePG) role secret with SCRAM-SHA-256 password hashing.
+Interactively create a CNPG (CloudNativePG) role secret with SCRAM-SHA-256
+password hashing.
 
 Creates a secret with the following format:
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -107,7 +109,8 @@ data:
 
 **Requirements**
 
-`bash` `kubectl` `gum` [`scram-sha-256`](https://github.com/supercaracal/scram-sha-256) `base64`
+`bash` `kubectl` `gum`
+[`scram-sha-256`](https://github.com/supercaracal/scram-sha-256) `base64`
 
 **Installation**
 
@@ -131,11 +134,13 @@ mkdir -p ~/.config/kubectl-create_cnpg_role_secret
 echo 'PREFIX=cnpg-role-' > ~/.config/kubectl-create_cnpg_role_secret/config
 ```
 
-With this config, if you enter `alice` as the secret name, the resulting secret will be named `cnpg-role-alice`.
+With this config, if you enter `alice` as the secret name, the resulting secret
+will be named `cnpg-role-alice`.
 
 ## cilium-health-status
 
-Interactively select a node, then run `cilium-health status --verbose` on that node's Cilium agent pod.
+Interactively select a node, then run `cilium-health status --verbose` on that
+node's Cilium agent pod.
 
 **Requirements**
 
