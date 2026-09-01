@@ -13,7 +13,7 @@ Interactively select a context to use.
 **Installation**
 
 ```bash
-curl -o ~/.local/bin/kubectl-ctx https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-ctx
+curl -o ~/.local/bin/kubectl-ctx https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-ctx
 chmod +x ~/.local/bin/kubectl-ctx
 ```
 
@@ -34,7 +34,7 @@ Interactively select a namespace to use.
 **Installation**
 
 ```bash
-curl -o ~/.local/bin/kubectl-ns https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-ns
+curl -o ~/.local/bin/kubectl-ns https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-ns
 chmod +x ~/.local/bin/kubectl-ns
 ```
 
@@ -55,7 +55,7 @@ Interactively select a context and namespace to use.
 **Installation**
 
 ```bash
-curl -o ~/.local/bin/kubectl-use https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-use
+curl -o ~/.local/bin/kubectl-use https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-use
 chmod +x ~/.local/bin/kubectl-use
 ```
 
@@ -76,7 +76,7 @@ Interactively create a generic secret.
 **Installation**
 
 ```bash
-curl -o ~/.local/bin/kubectl-createsecret https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-createsecret
+curl -o ~/.local/bin/kubectl-createsecret https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-createsecret
 chmod +x ~/.local/bin/kubectl-createsecret
 ```
 
@@ -115,7 +115,7 @@ data:
 **Installation**
 
 ```bash
-curl -o ~/.local/bin/kubectl-create_cnpg_role_secret https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-create_cnpg_role_secret
+curl -o ~/.local/bin/kubectl-create_cnpg_role_secret https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-create_cnpg_role_secret
 chmod +x ~/.local/bin/kubectl-create_cnpg_role_secret
 ```
 
@@ -149,7 +149,7 @@ node's Cilium agent pod.
 **Installation**
 
 ```bash
-curl -o ~/.local/bin/kubectl-cilium_health_status https://codeberg.org/cayne/kubectl-plugins/raw/branch/main/kubectl-cilium_health_status
+curl -o ~/.local/bin/kubectl-cilium_health_status https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-cilium_health_status
 chmod +x ~/.local/bin/kubectl-cilium_health_status
 ```
 
