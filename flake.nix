@@ -57,6 +57,7 @@
             kubectl-ns = mkPlugin "kubectl-ns" [ ];
             kubectl-use = mkPlugin "kubectl-use" [ ];
             kubectl-createsecret = mkPlugin "kubectl-createsecret" [ ];
+            kubectl-create_sealed_secret = mkPlugin "kubectl-create_sealed_secret" [ pkgs.coreutils pkgs.kubeseal pkgs.yq ];
             kubectl-create_cnpg_role_secret = mkPlugin "kubectl-create_cnpg_role_secret" [ pkgs.coreutils scram ];
             kubectl-cilium_health_status = mkPlugin "kubectl-cilium_health_status" [ ];
             kubectl-debug_pod = mkPlugin "kubectl-debug_pod" [ ];

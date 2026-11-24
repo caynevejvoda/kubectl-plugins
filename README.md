@@ -107,6 +107,45 @@ chmod +x ~/.local/bin/kubectl-createsecret
 kubectl createsecret
 ```
 
+## create-sealed-secret
+
+Interactively create or update a SealedSecret file. Enter key/value pairs, review
+the plaintext preview, and confirm encryption with `kubeseal`. Existing files
+retain their name, namespace, and unchanged keys. The manifest is saved locally
+and is not applied to the cluster.
+
+**Requirements**
+
+`bash` `kubectl` `gum` `kubeseal` [jq-based `yq`](https://github.com/kislyuk/yq)
+
+**Installation**
+
+```bash
+curl -o ~/.local/bin/kubectl-create_sealed_secret https://git.justaserver.de/cayne/kubectl-plugins/raw/branch/main/kubectl-create_sealed_secret
+chmod +x ~/.local/bin/kubectl-create_sealed_secret
+```
+
+**Usage**
+
+```bash
+kubectl create-sealed-secret ./sealed-secret.yaml
+```
+
+The output path is required; its parent directory must exist.
+
+**Configuration**
+
+Optionally set a certificate file path or URL in
+`${XDG_CONFIG_HOME:-~/.config}/kubectl-create_sealed_secret/config`:
+
+```bash
+SEALED_SECRET_CERT='/path/to/sealed-secrets.pem'
+```
+
+`SEALED_SECRET_CERT` can also be set in the environment; the config file takes
+precedence. When unset or empty, no `--cert` flag is passed and `kubeseal` uses
+its default certificate discovery.
+
 ## create-cnpg-role-secret
 
 Interactively create a CNPG (CloudNativePG) role secret with SCRAM-SHA-256
